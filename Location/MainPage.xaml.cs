@@ -1,69 +1,68 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Device.Location;
-using System.Linq;
-using System.Net;
+﻿using System.Device.Location;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
+using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
-using Microsoft.Phone.Reactive;
+using Microsoft.Phone.Controls.Maps;
 
 namespace Location
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        private GeoCoordinateWatcher _gcw; 
 
-        GeoCoordinateWatcher gcw; // Constructor
         public MainPage()
         {
             InitializeComponent();
         }
 
-        protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
-            if (gcw != null)
-                gcw.Stop(); 
+            if (_gcw != null)
+                _gcw.Stop();
         }
 
-        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            if (gcw == null)
-                gcw = new GeoCoordinateWatcher(GeoPositionAccuracy.High);
+            if (_gcw == null)
+                _gcw = new GeoCoordinateWatcher(GeoPositionAccuracy.High);
 
-            gcw.Start();
+            _gcw.Start();
 
-            map1.Center = new GeoCoordinate(gcw.Position.Location.Latitude, gcw.Position.Location.Longitude);
-            map1.ZoomLevel = 5;
-            map1.ZoomBarVisibility = Visibility.Visible;
-            gcw.PositionChanged += new EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>>(myCoordinateWatcher_PositionChanged);
+            Map1.Center = new GeoCoordinate(_gcw.Position.Location.Latitude, _gcw.Position.Location.Longitude);
+            Map1.ZoomLevel = 5;
+            Map1.ZoomBarVisibility = Visibility.Visible;
+            _gcw.PositionChanged += MyCoordinateWatcherPositionChanged;
         }
 
-        private void myCoordinateWatcher_PositionChanged(object sender, GeoPositionChangedEventArgs<GeoCoordinate> e)
+        private void MyCoordinateWatcherPositionChanged(object sender, GeoPositionChangedEventArgs<GeoCoordinate> e)
         {
             ShowGeoLocation();
         }
 
         private void ShowGeoLocation()
         {
-            textBlock1.Text = "Latitude: " + gcw.Position.Location.Latitude;
-            textBlock1.Text += "\nLongitude" + gcw.Position.Location.Longitude;
+            TextBlock1.Text = "Latitude: " + _gcw.Position.Location.Latitude;
+            TextBlock1.Text += "\nLongitude" + _gcw.Position.Location.Longitude;
 
-            map1.Center = new GeoCoordinate(gcw.Position.Location.Latitude, gcw.Position.Location.Longitude);
+            Map1.Center = new GeoCoordinate(_gcw.Position.Location.Latitude, _gcw.Position.Location.Longitude);
+            var p = new Pushpin
+                        {
+                            Template = this.Resources["pinMyLoc"] as ControlTemplate,
+                            Location = _gcw.Position.Location
+                        };
+
+            mapControl.Items.Clear();
+            mapControl.Items.Add(p);
+            Map1.SetView(_gcw.Position.Location, 17.0);
         }
 
-        private void Refresh_Click(object sender, RoutedEventArgs e)
+        private void RefreshClick(object sender, RoutedEventArgs e)
         {
             ShowGeoLocation();
         }
-
-        
     }
 }
