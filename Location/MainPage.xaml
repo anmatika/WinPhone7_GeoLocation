@@ -44,8 +44,10 @@
                     Width="438" Height="450" HorizontalAlignment="Left" VerticalAlignment="Top" >
                 <my:MapItemsControl x:Name="mapControl" />
             </my:Map>
-            <Button Height="75" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,0" x:Name="Refresh"
-                    Click="RefreshClick" Content="Refresh" />
+            <!--<Button Height="75" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,0" x:Name="Refresh"
+                    Click="RefreshClick" Content="Refresh" />-->
+            <Button Height="75" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,0" x:Name="SendLocation"
+                    Click="SendLocationClick" Content="SendLocation" />
         </StackPanel>
     </Grid>
 
