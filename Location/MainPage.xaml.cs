@@ -7,7 +7,7 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Controls.Maps;
 using RestSharp;
-
+using SharedLibrary;
 namespace Location
 {
     public partial class MainPage : PhoneApplicationPage
@@ -79,86 +79,14 @@ namespace Location
 
         private void SendAsync()
         {
-            var client = new RestClient("http://localhost:50590/");
+            var locationApi = new LocationApi("Antti", string.Empty);
+            var request = new RestRequest("api/location/receivelocation", Method.POST) { RequestFormat = DataFormat.Json, RootElement = "Location" };
+            locationApi.ExecuteAsyncPost<LocationDto>(request, Callback);
+        }
 
-            //var request = new RestRequest("{id}", Method.POST);
-            var request = new RestRequest("api/phone/phonerequest", Method.POST);
-
-
-          //  request.AddParameter("name", "value"); // adds to POST or URL querystring based on Method
-            //request.AddUrlSegment("id", "123"); // replaces matching token in request.Resource
-             
-            // easily add HTTP Headers
-           // request.AddHeader("header", "value");
-            request.RootElement = "Call";
-            request.AddParameter("Call", new Call());
-            request.AddHeader("Content-type", "application/json");
-            var rest = client.ExecuteAsyncPost<Call>(request, OnCallback, "POST");
+        private void Callback(LocationDto locationDto)
+        {
             
-            // abort the request on demand
-            //asyncHandle.Abort();
         }
-
-        private void OnCallback(IRestResponse<Call> restResponse, RestRequestAsyncHandle handle)
-        {
-            var call = restResponse.Data;
-          
-        }
-
-        public void CreateUser()
-        {
-            RestRequest request = new RestRequest(Method.POST) { RequestFormat = DataFormat.Json, Resource = "api/phone" };
-            var client = new RestClient("http://localhost:50590/Phone/CreateUser");
-
-            CUser user = new CUser
-            {
-                Username = "Foo2",
-                Password = "BarBaz2"
-            };
-
-            request.AddParameter("Username", user.Username);
-            request.AddParameter("Password", user.Password);
-
-            client.PostAsync<int>(request, (response, handler) =>
-            {
-                switch (response.Data)
-                {
-                    case 0:
-                        //Username is taken
-
-                        break;
-                    case 1:
-                        //Success
-                        break;
-                    case 2:
-                        break;
-                }
-
-            });
-        }
-    }
-
-    public class CUser
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-    }
-
-    public class Call
-    {
-        public string Sid { get; set; }
-        public DateTime DateCreated { get; set; }
-        public DateTime DateUpdated { get; set; }
-        public string CallSegmentSid { get; set; }
-        public string AccountSid { get; set; }
-        public string Called { get; set; }
-        public string Caller { get; set; }
-        public string PhoneNumberSid { get; set; }
-        public int Status { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
-        public int Duration { get; set; }
-        public decimal Price { get; set; }
-        public int Flags { get; set; }
     }
 }

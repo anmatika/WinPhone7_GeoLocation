@@ -1,0 +1,15 @@
+﻿@model LocationWebPage.Models.User
+
+@using (Html.BeginForm("Create", "SignUp", FormMethod.Post))
+{
+    @Html.LabelFor(m => m.Email)
+    @Html.EditorFor(m => m.Email)
+
+    @Html.LabelFor(m => m.UserName)
+    @Html.EditorFor(m => m.UserName)
+
+    @Html.LabelFor(m => m.Password)
+    @Html.EditorFor(m => m.Password)
+
+    <input type="submit"/>
+}
